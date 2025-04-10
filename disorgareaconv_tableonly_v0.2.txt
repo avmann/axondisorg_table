@@ -1,0 +1,49 @@
+//table conversion for measurement of disorganised axons v0.2 by Andre Voelzmann
+
+macro "disorganised area [q]" {
+
+function tableF3() {
+/* p is line number */
+/* k is new line number for addons */
+/* t is new line number of disorg area start -1 */
+		for (p=0; p<n; p++){
+		V2=getResult("Length", p);
+		V3=getResult("Area", p);
+		Vt=getResult("Length", p-1);
+		if (V2==0 && Vt==0)
+			{Vo=getResult("disorganised area", s);
+			V4=Vo+V3;
+			setResult("disorganised area", s, V4);
+			k=s;}
+		else if (V2==0 && Vt>=0)
+			{s=k-1;
+			setResult("disorganised area", s, V3);
+			k=s;}
+		else {setResult("axon length", k, V2);
+			setResult("disorganised area", k, 0);};
+		k=k+1;
+		}
+}
+
+function ratio() {
+for (l=0; l<n; l++){
+		dl=getResult("axon length", l);
+		da=getResult("disorganised area", l);
+		dr=da/dl;
+		setResult("disorganisation ratio", l, dr);
+		}
+	}	
+/*Verfies that the Results table is open */
+	if (! isOpen("Results")) {exit ("No Results table")}
+	
+	
+
+/*checks that there are actually results and the table is open */
+	if (nResults() > 0 && isOpen("Results")) {
+	n=nResults;
+	k=0;
+		tableF3();
+		ratio();};
+
+print("conversion done");
+}
